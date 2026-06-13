@@ -26,7 +26,7 @@ Route::get('/checkout', [OrderController::class, 'checkout'])->name('order.check
 Route::post('/checkout', [OrderController::class, 'store'])->name('order.store');
 Route::get('/order/success', [OrderController::class, 'success'])->name('order.success');
 Route::get('/order/track', [OrderController::class, 'track'])->name('order.track');
-
+Route::get('/order/{order}/receipt', [OrderController::class, 'receipt'])->name('order.receipt');
 
 // ============ AUTH: PELANGGAN (No HP + OTP) ============
 Route::prefix('login')->name('customer.')->group(function () {

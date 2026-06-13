@@ -11,8 +11,15 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_code', 'customer_name', 'customer_email',
+        'order_code', 'user_id', 'customer_name', 'customer_email',
         'customer_phone', 'notes', 'total_price', 'status',
+        'order_type', 'take_away_method', 'table_number',
+        'delivery_address', 'payment_method', 'payment_status', 'delivery_fee',
+    ];
+
+    protected $casts = [
+        'total_price'  => 'decimal:2',
+        'delivery_fee' => 'decimal:2',
     ];
 
     protected static function boot()
@@ -28,8 +35,52 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function getFormattedTotalAttribute(): string
     {
         return 'Rp ' . number_format($this->total_price, 0, ',', '.');
+    }
+
+    public function getFormattedDeliveryFeeAttribute(): string
+    {
+        return 'Rp ' . number_format($this->delivery_fee, 0, ',', '.');
+    }
+
+    public function getGrandTotalAttribute(): float
+    {
+        return $this->total_price + $this->delivery_fee;
+    }
+
+    public function getFormattedGrandTotalAttribute(): string
+    {
+        return 'Rp ' . number_format($this->grand_total, 0, ',', '.');
+    }
+
+    public function getOrderTypeLabelAttribute(): string
+    {
+        if ($this->order_type === 'dine_in') {
+            return 'Dine In - Meja ' . $this->table_number;
+        }
+
+        return $this->take_away_method === 'delivery'
+            ? 'Take Away - Delivery'
+            : 'Take Away - Ambil Sendiri';
+    }
+
+    public function getPaymentMethodLabelAttribute(): string
+    {
+        return match($this->payment_method) {
+            'qris'      => 'QRIS',
+            'dana'      => 'Transfer DANA',
+            'ovo'       => 'Transfer OVO',
+            'bsi'       => 'Transfer Bank BSI',
+            'bank_aceh' => 'Transfer Bank Aceh',
+            'cash'      => 'Cash / Tunai',
+            default     => $this->payment_method,
+        };
     }
 }
