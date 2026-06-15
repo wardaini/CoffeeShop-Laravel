@@ -8,6 +8,9 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\EmployeeAuthController;
 use App\Http\Controllers\Auth\StaffAuthController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\Employee\SalaryController;
+use App\Http\Controllers\Employee\DeliveryController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -68,4 +71,27 @@ Route::middleware(['auth', 'role:bos'])->prefix('bos')->name('bos.')->group(func
 
 Route::middleware(['auth', 'role:it'])->prefix('it')->name('it.')->group(function () {
     Route::get('/dashboard', fn() => view('it.dashboard'))->name('dashboard');
+});
+
+
+// ============ ABSENSI (Public - Scan Barcode + Wajah) ============
+Route::prefix('absensi')->name('attendance.')->group(function () {
+    Route::get('/scan', [AttendanceController::class, 'scanPage'])->name('scan');
+    Route::post('/verify-code', [AttendanceController::class, 'verifyCode'])->name('verify-code');
+    Route::get('/wajah/{employeeCode}', [AttendanceController::class, 'facePage'])->name('face');
+    Route::post('/proses', [AttendanceController::class, 'process'])->name('process');
+});
+
+// ============ AREA KARYAWAN ============
+Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('employee.')->group(function () {
+    Route::get('/gaji', [SalaryController::class, 'index'])->name('salary');
+    Route::get('/riwayat-absensi', [SalaryController::class, 'attendanceHistory'])->name('attendance.history');
+
+    Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
+    Route::patch('/delivery/{delivery}/status', [DeliveryController::class, 'updateStatus'])->name('delivery.update-status');
+
+    Route::get('/barcode', function () {
+        $profile = auth()->user()->employeeProfile;
+        return view('employee.barcode', compact('profile'));
+    })->name('barcode');
 });

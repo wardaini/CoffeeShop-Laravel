@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('deliveries', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->foreignId('courier_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->enum('status', ['waiting', 'assigned', 'on_the_way', 'delivered', 'failed'])->default('waiting');
+            $table->dateTime('assigned_at')->nullable();
+            $table->dateTime('picked_up_at')->nullable();
+            $table->dateTime('delivered_at')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('deliveries');
+    }
+};

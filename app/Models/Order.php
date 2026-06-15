@@ -26,7 +26,14 @@ class Order extends Model
     {
         parent::boot();
         static::creating(function ($order) {
-            $order->order_code = 'ORD-' . strtoupper(Str::random(8));
+            $order->order_code = 'ORD-' . \Illuminate\Support\Str::random(8);
+            $order->order_code = 'ORD-' . strtoupper(\Illuminate\Support\Str::random(8));
+        });
+
+        static::created(function ($order) {
+            if ($order->take_away_method === 'delivery') {
+                $order->delivery()->create(['status' => 'waiting']);
+            }
         });
     }
 
@@ -82,5 +89,10 @@ class Order extends Model
             'cash'      => 'Cash / Tunai',
             default     => $this->payment_method,
         };
+    }
+
+    public function delivery()
+    {
+        return $this->hasOne(Delivery::class);
     }
 }
