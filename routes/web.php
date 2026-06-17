@@ -5,12 +5,20 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\Auth\CustomerAuthController;
+// use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\EmployeeAuthController;
 use App\Http\Controllers\Auth\StaffAuthController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Employee\SalaryController;
 use App\Http\Controllers\Employee\DeliveryController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\EmployeeVerificationController;
+use App\Http\Controllers\Admin\OrderManagementController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Bos\DashboardController as BosDashboard;
+use App\Http\Controllers\Bos\ReportController;
+use App\Http\Controllers\IT\UserManagementController;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -94,4 +102,42 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('employee
         $profile = auth()->user()->employeeProfile;
         return view('employee.barcode', compact('profile'));
     })->name('barcode');
+});
+
+
+// ============ ADMIN ============
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+
+    // Verifikasi karyawan
+    Route::get('/karyawan', [EmployeeVerificationController::class, 'index'])->name('employees.index');
+    Route::get('/karyawan/{profile}', [EmployeeVerificationController::class, 'show'])->name('employees.show');
+    Route::post('/karyawan/{profile}/verify', [EmployeeVerificationController::class, 'verify'])->name('employees.verify');
+    Route::post('/karyawan/{profile}/reject', [EmployeeVerificationController::class, 'reject'])->name('employees.reject');
+    Route::post('/karyawan/{profile}/salary', [EmployeeVerificationController::class, 'updateSalary'])->name('employees.salary');
+
+    // Manajemen order
+    Route::get('/orders', [OrderManagementController::class, 'index'])->name('orders.index');
+    Route::post('/orders/{order}/confirm-payment', [OrderManagementController::class, 'confirmPayment'])->name('orders.confirm-payment');
+    Route::patch('/orders/{order}/status', [OrderManagementController::class, 'updateStatus'])->name('orders.update-status');
+    Route::post('/orders/{order}/assign-delivery', [OrderManagementController::class, 'assignDelivery'])->name('orders.assign-delivery');
+
+    // Manajemen produk
+    Route::resource('products', AdminProductController::class);
+    Route::post('/products/{product}/toggle', [AdminProductController::class, 'toggleAvailable'])->name('products.toggle');
+});
+
+// ============ BOS ============
+Route::middleware(['auth', 'role:bos'])->prefix('bos')->name('bos.')->group(function () {
+    Route::get('/dashboard', [BosDashboard::class, 'index'])->name('dashboard');
+    Route::get('/laporan', [ReportController::class, 'index'])->name('report');
+    Route::get('/laporan/pdf', [ReportController::class, 'downloadPdf'])->name('report.pdf');
+    Route::get('/laporan/excel', [ReportController::class, 'downloadExcel'])->name('report.excel');
+});
+
+// ============ IT ============
+Route::middleware(['auth', 'role:it'])->prefix('it')->name('it.')->group(function () {
+    Route::get('/dashboard', [UserManagementController::class, 'index'])->name('dashboard');
+    Route::post('/users/{user}/toggle', [UserManagementController::class, 'toggleActive'])->name('users.toggle');
+    Route::post('/employees/{profile}/verify', [UserManagementController::class, 'verifyEmployee'])->name('employees.verify');
 });
