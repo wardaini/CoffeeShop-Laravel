@@ -11,10 +11,23 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
-        ]);
-    })
+    $middleware->alias([
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
+    ]);
+
+    $middleware->redirectGuestsTo(function ($request) {
+        // Arahkan ke login yang sesuai berdasarkan URL
+        if (str_starts_with($request->path(), 'karyawan')) {
+            return route('employee.login');
+        }
+        if (str_starts_with($request->path(), 'admin') ||
+            str_starts_with($request->path(), 'bos') ||
+            str_starts_with($request->path(), 'it')) {
+            return route('staff.login');
+        }
+        return route('customer.login');
+    });
+})
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
