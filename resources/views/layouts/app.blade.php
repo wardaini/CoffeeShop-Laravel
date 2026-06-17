@@ -147,33 +147,21 @@
     </button>
 
     <div class="nav-links" id="navLinks">
-        <a href="{{ route('home') }}"        class="{{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
-        <a href="{{ route('menu.index') }}"  class="{{ request()->routeIs('menu.*') ? 'active' : '' }}">Menu</a>
+        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
+        <a href="{{ route('menu.index') }}" class="{{ request()->routeIs('menu.*') ? 'active' : '' }}">Menu</a>
+        <a href="{{ route('order.track') }}" class="{{ request()->routeIs('order.track') ? 'active' : '' }}">Lacak Pesanan</a>
 
         @auth
-            @if(auth()->user()->role === 'pelanggan')
-                <a href="{{ route('cart.index') }}" class="cart-badge">🛒 {{ count(session('cart', [])) }}</a>
-                <form method="POST" action="{{ route('customer.logout') }}">
-                    @csrf
-                    <button type="submit" style="background:none;border:none;color:var(--muted);cursor:pointer;font-family:inherit;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;">Keluar</button>
-                </form>
-            @elseif(auth()->user()->role === 'karyawan')
-                <a href="{{ route('employee.dashboard') }}">Dashboard</a>
-                <form method="POST" action="{{ route('employee.logout') }}">
-                    @csrf
-                    <button type="submit" style="background:none;border:none;color:var(--muted);cursor:pointer;font-family:inherit;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;">Keluar</button>
-                </form>
-            @else
-                <a href="{{ route(auth()->user()->role . '.dashboard') }}">Dashboard</a>
-                <form method="POST" action="{{ route('staff.logout') }}">
+            @if(in_array(auth()->user()->role, ['karyawan', 'admin', 'bos', 'it']))
+                <a href="{{ auth()->user()->role === 'karyawan' ? route('employee.dashboard') : route(auth()->user()->role . '.dashboard') }}">Dashboard</a>
+                <form method="POST" action="{{ auth()->user()->role === 'karyawan' ? route('employee.logout') : route('staff.logout') }}">
                     @csrf
                     <button type="submit" style="background:none;border:none;color:var(--muted);cursor:pointer;font-family:inherit;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;">Keluar</button>
                 </form>
             @endif
-        @else
-            <a href="{{ route('order.track') }}" class="{{ request()->routeIs('order.track') ? 'active' : '' }}">Lacak Pesanan</a>
-            <a href="{{ route('customer.login') }}" class="cart-badge">Masuk</a>
         @endauth
+
+        <a href="{{ route('cart.index') }}" class="cart-badge">🛒 {{ count(session('cart', [])) }}</a>
     </div>
 </nav>
 

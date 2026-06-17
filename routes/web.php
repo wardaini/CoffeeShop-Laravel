@@ -31,14 +31,14 @@ Route::get('/order/success', [OrderController::class, 'success'])->name('order.s
 Route::get('/order/track', [OrderController::class, 'track'])->name('order.track');
 Route::get('/order/{order}/receipt', [OrderController::class, 'receipt'])->name('order.receipt');
 
-// ============ AUTH: PELANGGAN (No HP + OTP) ============
-Route::prefix('login')->name('customer.')->group(function () {
-    Route::get('/', [CustomerAuthController::class, 'showLogin'])->name('login');
-    Route::post('/send-otp', [CustomerAuthController::class, 'sendOtp'])->name('send-otp');
-    Route::get('/otp', [CustomerAuthController::class, 'showOtpForm'])->name('otp.form');
-    Route::post('/verify-otp', [CustomerAuthController::class, 'verifyOtp'])->name('verify-otp');
-});
-Route::post('/logout-customer', [CustomerAuthController::class, 'logout'])->name('customer.logout');
+// // ============ AUTH: PELANGGAN (No HP + OTP) ============
+// Route::prefix('login')->name('customer.')->group(function () {
+//     Route::get('/', [CustomerAuthController::class, 'showLogin'])->name('login');
+//     Route::post('/send-otp', [CustomerAuthController::class, 'sendOtp'])->name('send-otp');
+//     Route::get('/otp', [CustomerAuthController::class, 'showOtpForm'])->name('otp.form');
+//     Route::post('/verify-otp', [CustomerAuthController::class, 'verifyOtp'])->name('verify-otp');
+// });
+// Route::post('/logout-customer', [CustomerAuthController::class, 'logout'])->name('customer.logout');
 
 // ============ AUTH: KARYAWAN ============
 Route::prefix('karyawan')->name('employee.')->group(function () {

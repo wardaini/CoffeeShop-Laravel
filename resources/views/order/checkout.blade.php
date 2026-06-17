@@ -68,19 +68,21 @@
 
                 <div class="form-group">
                     <label>Nama Lengkap *</label>
-                    <input type="text" name="customer_name" value="{{ old('customer_name', auth()->user()->name ?? '') }}" required>
+                    <input type="text" name="customer_name" value="{{ old('customer_name') }}"
+                        placeholder="Masukkan nama kamu" required>
                     @error('customer_name')<div class="form-error">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="form-group">
-                    <label>Email *</label>
-                    <input type="email" name="customer_email" value="{{ old('customer_email', auth()->user()->email ?? '') }}" required>
-                    @error('customer_email')<div class="form-error">{{ $message }}</div>@enderror
+                    <label>No. Telepon <span style="color:var(--muted); font-size:.75rem; text-transform:none;">(opsional — untuk konfirmasi pesanan)</span></label>
+                    <input type="text" name="customer_phone" value="{{ old('customer_phone') }}"
+                        placeholder="08xxxxxxxxxx">
                 </div>
 
                 <div class="form-group">
-                    <label>No. Telepon</label>
-                    <input type="text" name="customer_phone" value="{{ old('customer_phone', auth()->user()->phone ?? '') }}" placeholder="0812xxxxxxxx">
+                    <label>Email <span style="color:var(--muted); font-size:.75rem; text-transform:none;">(opsional — untuk bukti pesanan)</span></label>
+                    <input type="email" name="customer_email" value="{{ old('customer_email') }}"
+                        placeholder="email@contoh.com">
                 </div>
             </div>
 

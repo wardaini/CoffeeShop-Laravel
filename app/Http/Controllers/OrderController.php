@@ -26,7 +26,7 @@ class OrderController extends Controller
     {
         $request->validate([
             'customer_name'    => 'required|string|max:100',
-            'customer_email'   => 'required|email',
+            'customer_email'   => 'nullable|email',
             'customer_phone'   => 'nullable|string|max:20',
             'notes'            => 'nullable|string|max:500',
             'order_type'       => 'required|in:dine_in,take_away',
@@ -53,7 +53,7 @@ class OrderController extends Controller
             $order = Order::create([
                 'user_id'          => auth()->id(),
                 'customer_name'    => $request->customer_name,
-                'customer_email'   => $request->customer_email,
+                'customer_email'   => $request->customer_email ?? 'guest@coffeeshop.local',
                 'customer_phone'   => $request->customer_phone,
                 'notes'            => $request->notes,
                 'total_price'      => $total,

@@ -26,14 +26,21 @@ class CustomerAuthController extends Controller
             'phone' => 'required|string|min:10|max:15',
         ]);
 
+        // Cek dulu apakah no HP ini milik karyawan/staff
+        $existingUser = User::where('phone', $request->phone)->first();
+
+        if ($existingUser && $existingUser->role !== 'pelanggan') {
+            return back()->withErrors([
+                'phone' => 'Nomor HP ini terdaftar sebagai ' . ucfirst($existingUser->role) . '. Silakan gunakan halaman login yang sesuai.'
+            ]);
+        }
+
         $otp = rand(1000, 9999);
 
-        // Simulasi kirim OTP - simpan di session (production: kirim via SMS gateway)
         Session::put('otp_phone', $request->phone);
         Session::put('otp_code', $otp);
         Session::put('otp_expires', now()->addMinutes(5));
 
-        // TODO: integrasikan SMS Gateway (Twilio/Vonage/Zenziva) di sini
         session()->flash('otp_debug', "Kode OTP kamu: $otp (simulasi)");
 
         return redirect()->route('customer.otp.form');
@@ -65,13 +72,22 @@ class CustomerAuthController extends Controller
 
         $phone = Session::get('otp_phone');
 
+        // Double check lagi di sini untuk keamanan
+        $existingUser = User::where('phone', $phone)->first();
+
+        if ($existingUser && $existingUser->role !== 'pelanggan') {
+            Session::forget(['otp_phone', 'otp_code', 'otp_expires']);
+            return redirect()->route('customer.login')
+                ->withErrors(['phone' => 'Nomor HP ini terdaftar sebagai ' . ucfirst($existingUser->role) . '. Silakan gunakan halaman login yang sesuai.']);
+        }
+
         $user = User::firstOrCreate(
             ['phone' => $phone],
             [
-                'name' => 'Pelanggan ' . substr($phone, -4),
-                'email' => $phone . '@coffeeshop.local',
+                'name'     => 'Pelanggan ' . substr($phone, -4),
+                'email'    => $phone . '@coffeeshop.local',
                 'password' => Hash::make(Str::random(16)),
-                'role' => 'pelanggan',
+                'role'     => 'pelanggan',
             ]
         );
 
