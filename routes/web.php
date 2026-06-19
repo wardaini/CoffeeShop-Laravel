@@ -140,4 +140,5 @@ Route::middleware(['auth', 'role:it'])->prefix('it')->name('it.')->group(functio
     Route::get('/dashboard', [UserManagementController::class, 'index'])->name('dashboard');
     Route::post('/users/{user}/toggle', [UserManagementController::class, 'toggleActive'])->name('users.toggle');
     Route::post('/employees/{profile}/verify', [UserManagementController::class, 'verifyEmployee'])->name('employees.verify');
+    Route::post('/employees/{profile}/reject', [UserManagementController::class, 'rejectEmployee'])->name('employees.reject');
 });

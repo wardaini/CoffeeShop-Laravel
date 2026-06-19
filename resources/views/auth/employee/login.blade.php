@@ -49,7 +49,7 @@
 
         <div class="auth-links">
             Belum punya akun? <a href="{{ route('employee.register') }}">Daftar sebagai Karyawan</a><br>
-            Pelanggan? <a href="{{ route('customer.login') }}">Login di sini</a>
+            <a href="{{ route('menu.index') }}">← Kembali ke Menu</a>
         </div>
     </div>
 </div>
