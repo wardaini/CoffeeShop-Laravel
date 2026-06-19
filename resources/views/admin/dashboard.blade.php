@@ -56,17 +56,12 @@
             <div class="num">{{ $totalEmployees }}</div>
             <div class="label">Karyawan</div>
         </div>
-        <div class="stat-card">
-            <div class="icon">🔔</div>
-            <div class="num" style="color:{{ $pendingVerif > 0 ? '#e07070' : 'var(--gold)' }};">{{ $pendingVerif }}</div>
-            <div class="label">Verifikasi Pending</div>
-        </div>
     </div>
 
     <div class="menu-grid">
         <a href="{{ route('admin.employees.index') }}" class="menu-card">
             <div class="icon">👨‍💼</div>
-            <div class="label">Verifikasi Karyawan</div>
+            <div class="label">Data Karyawan</div>
         </a>
         <a href="{{ route('admin.orders.index') }}" class="menu-card">
             <div class="icon">📋</div>

@@ -4,40 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\EmployeeProfile;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 class EmployeeVerificationController extends Controller
 {
+    /**
+     * Hanya menampilkan karyawan yang SUDAH diverifikasi oleh IT.
+     * Verifikasi murni jadi tugas IT.
+     */
     public function index()
     {
-        $pending  = EmployeeProfile::with('user')->where('verification_status', 'pending')->get();
         $verified = EmployeeProfile::with('user')->where('verification_status', 'verified')->get();
-        $rejected = EmployeeProfile::with('user')->where('verification_status', 'rejected')->get();
 
-        return view('admin.employees.index', compact('pending', 'verified', 'rejected'));
-    }
-
-    public function show(EmployeeProfile $profile)
-    {
-        $profile->load('user');
-        return view('admin.employees.show', compact('profile'));
-    }
-
-    public function verify(EmployeeProfile $profile)
-    {
-        $profile->update(['verification_status' => 'verified']);
-        $profile->user->update(['is_active' => true]);
-
-        return back()->with('success', 'Karyawan ' . $profile->user->name . ' berhasil diverifikasi.');
-    }
-
-    public function reject(Request $request, EmployeeProfile $profile)
-    {
-        $profile->update(['verification_status' => 'rejected']);
-        $profile->user->update(['is_active' => false]);
-
-        return back()->with('success', 'Karyawan ' . $profile->user->name . ' ditolak.');
+        return view('admin.employees.index', compact('verified'));
     }
 
     public function updateSalary(Request $request, EmployeeProfile $profile)

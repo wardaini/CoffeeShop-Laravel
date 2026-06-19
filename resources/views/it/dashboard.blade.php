@@ -15,13 +15,15 @@
     .role-pelanggan { background:rgba(138,122,106,.15); color:var(--muted); }
     .status-active { color:#6fcf97; font-size:.8rem; }
     .status-inactive { color:#e07070; font-size:.8rem; }
+    .verif-pending { color:#e07070; font-weight:600; }
+    .verif-verified { color:#6fcf97; }
 </style>
 @endpush
 
 @section('content')
 <div class="wrap">
     <h1 style="font-family:'Playfair Display',serif; color:var(--cream); margin-bottom:.3rem;">Dashboard IT</h1>
-    <p style="color:var(--muted); margin-bottom:2rem;">Manajemen User · Total: {{ $users->total() }} user</p>
+    <p style="color:var(--muted); margin-bottom:2rem;">Manajemen User & Verifikasi Karyawan · Total: {{ $users->total() }} user</p>
 
     <div style="overflow-x:auto;">
         <table>
@@ -31,7 +33,7 @@
                     <th>Email</th>
                     <th>Role</th>
                     <th>Status Akun</th>
-                    <th>Status Verifikasi</th>
+                    <th>Verifikasi</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -46,19 +48,25 @@
                             {{ $user->is_active ? '● Aktif' : '● Nonaktif' }}
                         </span>
                     </td>
-                    <td style="font-size:.82rem; color:var(--muted);">
+                    <td style="font-size:.82rem;">
                         @if($user->employeeProfile)
-                            {{ ucfirst($user->employeeProfile->verification_status) }}
+                            <span class="{{ $user->employeeProfile->verification_status === 'pending' ? 'verif-pending' : 'verif-verified' }}">
+                                {{ ucfirst($user->employeeProfile->verification_status) }}
+                            </span>
                         @else
                             -
                         @endif
                     </td>
                     <td>
                         <div style="display:flex; gap:.4rem; flex-wrap:wrap;">
-                            @if($user->role === 'karyawan' && $user->employeeProfile?->verification_status === 'pending')
+                            @if($user->employeeProfile && $user->employeeProfile->verification_status === 'pending')
                             <form method="POST" action="{{ route('it.employees.verify', $user->employeeProfile) }}">
                                 @csrf
                                 <button type="submit" class="btn btn-gold btn-sm">✅ Verifikasi</button>
+                            </form>
+                            <form method="POST" action="{{ route('it.employees.reject', $user->employeeProfile) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-danger btn-sm">❌ Tolak</button>
                             </form>
                             @endif
 

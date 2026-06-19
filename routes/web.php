@@ -109,11 +109,11 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('employee
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
-    // Verifikasi karyawan
-    Route::get('/karyawan', [EmployeeVerificationController::class, 'index'])->name('employees.index');
-    Route::get('/karyawan/{profile}', [EmployeeVerificationController::class, 'show'])->name('employees.show');
-    Route::post('/karyawan/{profile}/verify', [EmployeeVerificationController::class, 'verify'])->name('employees.verify');
-    Route::post('/karyawan/{profile}/reject', [EmployeeVerificationController::class, 'reject'])->name('employees.reject');
+    // // Verifikasi karyawan
+    // Route::get('/karyawan', [EmployeeVerificationController::class, 'index'])->name('employees.index');
+    // Route::get('/karyawan/{profile}', [EmployeeVerificationController::class, 'show'])->name('employees.show');
+    // Route::post('/karyawan/{profile}/verify', [EmployeeVerificationController::class, 'verify'])->name('employees.verify');
+    // Route::post('/karyawan/{profile}/reject', [EmployeeVerificationController::class, 'reject'])->name('employees.reject');
     Route::post('/karyawan/{profile}/salary', [EmployeeVerificationController::class, 'updateSalary'])->name('employees.salary');
 
     // Manajemen order

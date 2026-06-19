@@ -12,7 +12,7 @@ class UserManagementController extends Controller
     public function index()
     {
         $users = User::with('employeeProfile')->orderBy('role')->paginate(20);
-        return view('it.users.index', compact('users'));
+        return view('it.dashboard', compact('users'));
     }
 
     public function toggleActive(User $user)
@@ -29,5 +29,13 @@ class UserManagementController extends Controller
         $profile->user->update(['is_active' => true]);
 
         return back()->with('success', 'Karyawan ' . $profile->user->name . ' berhasil diverifikasi.');
+    }
+
+    public function rejectEmployee(EmployeeProfile $profile)
+    {
+        $profile->update(['verification_status' => 'rejected']);
+        $profile->user->update(['is_active' => false]);
+
+        return back()->with('success', 'Karyawan ' . $profile->user->name . ' ditolak.');
     }
 }
