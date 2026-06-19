@@ -4,6 +4,7 @@
 @push('styles')
 <style>
     .wrap { max-width:1000px; margin:3rem auto; padding:0 5%; }
+    .menu-bar { display:flex; gap:.8rem; margin-bottom:1.5rem; flex-wrap:wrap; }
     table { width:100%; border-collapse:collapse; }
     th { padding:.7rem; text-align:left; font-size:.75rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); border-bottom:1px solid rgba(200,151,58,.15); }
     td { padding:.8rem .7rem; border-bottom:1px solid rgba(200,151,58,.07); font-size:.88rem; color:var(--text); vertical-align:middle; }
@@ -23,7 +24,11 @@
 @section('content')
 <div class="wrap">
     <h1 style="font-family:'Playfair Display',serif; color:var(--cream); margin-bottom:.3rem;">Dashboard IT</h1>
-    <p style="color:var(--muted); margin-bottom:2rem;">Manajemen User & Verifikasi Karyawan · Total: {{ $users->total() }} user</p>
+    <p style="color:var(--muted); margin-bottom:1.5rem;">Manajemen User & Verifikasi Karyawan · Total: {{ $users->total() }} user</p>
+
+    <div class="menu-bar">
+        <a href="{{ route('it.attendance.index') }}" class="btn btn-outline btn-sm">📋 Kelola Absensi</a>
+    </div>
 
     <div style="overflow-x:auto;">
         <table>

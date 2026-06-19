@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Input Absensi Manual')
+@section('title', 'Edit Absensi')
 
 @push('styles')
 <style>
@@ -13,62 +13,50 @@
         border-radius:8px; color:var(--text); font-size:.95rem; outline:none;
     }
     .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-    .form-error { font-size:.78rem; color:#e07070; margin-top:.3rem; }
 </style>
 @endpush
 
 @section('content')
 <div class="wrap">
     <a href="{{ route('it.attendance.index') }}" style="color:var(--muted); font-size:.85rem;">← Kembali</a>
-    <h1 style="font-family:'Playfair Display',serif; color:var(--cream); margin:1rem 0;">Input Absensi Manual</h1>
+    <h1 style="font-family:'Playfair Display',serif; color:var(--cream); margin:1rem 0;">Edit Absensi — {{ $attendance->user->name }}</h1>
 
     <div class="form-card">
-        <form method="POST" action="{{ route('it.attendance.store') }}">
-            @csrf
+        <form method="POST" action="{{ route('it.attendance.update', $attendance) }}">
+            @csrf @method('PUT')
 
             <div class="form-group">
-                <label>Karyawan *</label>
-                <select name="user_id" required>
-                    <option value="">-- Pilih Karyawan --</option>
-                    @foreach($employees as $emp)
-                    <option value="{{ $emp->id }}">{{ $emp->name }} ({{ $emp->employeeProfile->position ?? '-' }})</option>
-                    @endforeach
-                </select>
-                @error('user_id')<div class="form-error">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="form-group">
-                <label>Tanggal *</label>
-                <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}" required>
+                <label>Tanggal</label>
+                <input type="text" value="{{ $attendance->date->format('d M Y') }}" disabled style="opacity:.6;">
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Jam Masuk</label>
-                    <input type="time" name="clock_in" value="{{ old('clock_in') }}">
+                    <input type="time" name="clock_in" value="{{ $attendance->clock_in?->format('H:i') }}">
                 </div>
                 <div class="form-group">
                     <label>Jam Keluar</label>
-                    <input type="time" name="clock_out" value="{{ old('clock_out') }}">
+                    <input type="time" name="clock_out" value="{{ $attendance->clock_out?->format('H:i') }}">
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Status *</label>
                 <select name="status" required>
-                    <option value="hadir">Hadir</option>
-                    <option value="telat">Telat</option>
-                    <option value="izin">Izin</option>
-                    <option value="alpha">Alpha</option>
+                    <option value="hadir" {{ $attendance->status === 'hadir' ? 'selected' : '' }}>Hadir</option>
+                    <option value="telat" {{ $attendance->status === 'telat' ? 'selected' : '' }}>Telat</option>
+                    <option value="izin" {{ $attendance->status === 'izin' ? 'selected' : '' }}>Izin</option>
+                    <option value="alpha" {{ $attendance->status === 'alpha' ? 'selected' : '' }}>Alpha</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label>Catatan</label>
-                <textarea name="notes" rows="2">{{ old('notes') }}</textarea>
+                <textarea name="notes" rows="2">{{ $attendance->notes }}</textarea>
             </div>
 
-            <button type="submit" class="btn btn-gold" style="width:100%;">Simpan Absensi</button>
+            <button type="submit" class="btn btn-gold" style="width:100%;">Update Absensi</button>
         </form>
     </div>
 </div>
