@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Attendance;
+use App\Models\EmployeeProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -11,7 +12,10 @@ use Carbon\Carbon;
 class AttendanceController extends Controller
 {
     /**
-     * Halaman scan barcode (kamera)
+     * Halaman scan QR (statis, sama untuk semua karyawan).
+     * QR ini cukup berisi URL halaman pilih-karyawan, jadi
+     * "scan" di sini sebenarnya cukup tombol langsung,
+     * tapi kita tetap pakai scanner untuk konsistensi & bisa diprint.
      */
     public function scanPage()
     {
@@ -19,34 +23,24 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Setelah barcode terbaca, validasi kode karyawan lalu arahkan ke verifikasi wajah
+     * Setelah QR statis di-scan, tampilkan daftar karyawan aktif untuk dipilih.
      */
-    public function verifyCode(Request $request)
+    public function selectEmployee()
     {
-        $request->validate(['employee_code' => 'required|string']);
-
-        $profile = \App\Models\EmployeeProfile::where('employee_code', $request->employee_code)
+        $employees = EmployeeProfile::with('user')
             ->where('verification_status', 'verified')
-            ->first();
+            ->whereHas('user', fn($q) => $q->where('is_active', true))
+            ->get();
 
-        if (!$profile) {
-            return response()->json(['success' => false, 'message' => 'Kode karyawan tidak ditemukan atau belum diverifikasi.']);
-        }
-
-        return response()->json([
-            'success' => true,
-            'employee_code' => $profile->employee_code,
-            'name' => $profile->user->name,
-            'redirect' => route('attendance.face', $profile->employee_code),
-        ]);
+        return view('attendance.select-employee', compact('employees'));
     }
 
     /**
-     * Halaman verifikasi wajah
+     * Halaman verifikasi wajah setelah karyawan memilih namanya.
      */
     public function facePage($employeeCode)
     {
-        $profile = \App\Models\EmployeeProfile::where('employee_code', $employeeCode)
+        $profile = EmployeeProfile::where('employee_code', $employeeCode)
             ->where('verification_status', 'verified')
             ->firstOrFail();
 
@@ -55,28 +49,26 @@ class AttendanceController extends Controller
             ->where('date', $today)
             ->first();
 
-        // Tentukan mode: clock_in atau clock_out
         $mode = (!$attendance || !$attendance->clock_in) ? 'in' : 'out';
 
         return view('attendance.face', compact('profile', 'mode', 'attendance'));
     }
 
     /**
-     * Proses simpan absensi (clock in / out) dengan foto wajah
+     * Proses simpan absensi (clock in / out) dengan foto wajah.
      */
     public function process(Request $request)
     {
         $request->validate([
             'employee_code' => 'required|string',
-            'photo'         => 'required|string', // base64 image
+            'photo'         => 'required|string',
             'mode'          => 'required|in:in,out',
         ]);
 
-        $profile = \App\Models\EmployeeProfile::where('employee_code', $request->employee_code)
+        $profile = EmployeeProfile::where('employee_code', $request->employee_code)
             ->where('verification_status', 'verified')
             ->firstOrFail();
 
-        // Decode base64 photo
         $imageData = $request->photo;
         $imageData = str_replace('data:image/png;base64,', '', $imageData);
         $imageData = str_replace('data:image/jpeg;base64,', '', $imageData);

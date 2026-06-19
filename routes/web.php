@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Bos\DashboardController as BosDashboard;
 use App\Http\Controllers\Bos\ReportController;
 use App\Http\Controllers\IT\UserManagementController;
+use App\Http\Controllers\IT\AttendanceManagementController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -82,10 +83,10 @@ Route::middleware(['auth', 'role:it'])->prefix('it')->name('it.')->group(functio
 });
 
 
-// ============ ABSENSI (Public - Scan Barcode + Wajah) ============
+// ============ ABSENSI (Public - Scan QR Statis + Pilih Nama + Wajah) ============
 Route::prefix('absensi')->name('attendance.')->group(function () {
     Route::get('/scan', [AttendanceController::class, 'scanPage'])->name('scan');
-    Route::post('/verify-code', [AttendanceController::class, 'verifyCode'])->name('verify-code');
+    Route::get('/pilih-karyawan', [AttendanceController::class, 'selectEmployee'])->name('select-employee');
     Route::get('/wajah/{employeeCode}', [AttendanceController::class, 'facePage'])->name('face');
     Route::post('/proses', [AttendanceController::class, 'process'])->name('process');
 });
@@ -141,4 +142,11 @@ Route::middleware(['auth', 'role:it'])->prefix('it')->name('it.')->group(functio
     Route::post('/users/{user}/toggle', [UserManagementController::class, 'toggleActive'])->name('users.toggle');
     Route::post('/employees/{profile}/verify', [UserManagementController::class, 'verifyEmployee'])->name('employees.verify');
     Route::post('/employees/{profile}/reject', [UserManagementController::class, 'rejectEmployee'])->name('employees.reject');
+// Absen Manual
+    Route::get('/absensi', [AttendanceManagementController::class, 'index'])->name('attendance.index');
+    Route::get('/absensi/tambah', [AttendanceManagementController::class, 'create'])->name('attendance.create');
+    Route::post('/absensi', [AttendanceManagementController::class, 'store'])->name('attendance.store');
+    Route::get('/absensi/{attendance}/edit', [AttendanceManagementController::class, 'edit'])->name('attendance.edit');
+    Route::put('/absensi/{attendance}', [AttendanceManagementController::class, 'update'])->name('attendance.update');
+    Route::delete('/absensi/{attendance}', [AttendanceManagementController::class, 'destroy'])->name('attendance.destroy');
 });
