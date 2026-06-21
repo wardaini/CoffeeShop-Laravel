@@ -5,7 +5,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
-// use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\EmployeeAuthController;
 use App\Http\Controllers\Auth\StaffAuthController;
 use App\Http\Controllers\AttendanceController;
@@ -19,7 +18,6 @@ use App\Http\Controllers\Bos\DashboardController as BosDashboard;
 use App\Http\Controllers\Bos\ReportController;
 use App\Http\Controllers\IT\UserManagementController;
 use App\Http\Controllers\IT\AttendanceManagementController;
-
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -40,15 +38,6 @@ Route::get('/order/success', [OrderController::class, 'success'])->name('order.s
 Route::get('/order/track', [OrderController::class, 'track'])->name('order.track');
 Route::get('/order/{order}/receipt', [OrderController::class, 'receipt'])->name('order.receipt');
 
-// // ============ AUTH: PELANGGAN (No HP + OTP) ============
-// Route::prefix('login')->name('customer.')->group(function () {
-//     Route::get('/', [CustomerAuthController::class, 'showLogin'])->name('login');
-//     Route::post('/send-otp', [CustomerAuthController::class, 'sendOtp'])->name('send-otp');
-//     Route::get('/otp', [CustomerAuthController::class, 'showOtpForm'])->name('otp.form');
-//     Route::post('/verify-otp', [CustomerAuthController::class, 'verifyOtp'])->name('verify-otp');
-// });
-// Route::post('/logout-customer', [CustomerAuthController::class, 'logout'])->name('customer.logout');
-
 // ============ AUTH: KARYAWAN ============
 Route::prefix('karyawan')->name('employee.')->group(function () {
     Route::get('/register', [EmployeeAuthController::class, 'showRegister'])->name('register');
@@ -59,6 +48,14 @@ Route::prefix('karyawan')->name('employee.')->group(function () {
 
     Route::middleware(['auth', 'role:karyawan'])->group(function () {
         Route::get('/dashboard', fn() => view('employee.dashboard'))->name('dashboard');
+        Route::get('/gaji', [SalaryController::class, 'index'])->name('salary');
+        Route::get('/riwayat-absensi', [SalaryController::class, 'attendanceHistory'])->name('attendance.history');
+        Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
+        Route::patch('/delivery/{delivery}/status', [DeliveryController::class, 'updateStatus'])->name('delivery.update-status');
+        Route::get('/barcode', function () {
+            $profile = auth()->user()->employeeProfile;
+            return view('employee.barcode', compact('profile'));
+        })->name('barcode');
     });
 });
 
@@ -69,20 +66,6 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::post('/logout', [StaffAuthController::class, 'logout'])->name('logout');
 });
 
-// ============ DASHBOARD PER ROLE ============
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
-});
-
-Route::middleware(['auth', 'role:bos'])->prefix('bos')->name('bos.')->group(function () {
-    Route::get('/dashboard', fn() => view('bos.dashboard'))->name('dashboard');
-});
-
-Route::middleware(['auth', 'role:it'])->prefix('it')->name('it.')->group(function () {
-    Route::get('/dashboard', fn() => view('it.dashboard'))->name('dashboard');
-});
-
-
 // ============ ABSENSI (Public - Scan QR Statis + Pilih Nama + Wajah) ============
 Route::prefix('absensi')->name('attendance.')->group(function () {
     Route::get('/scan', [AttendanceController::class, 'scanPage'])->name('scan');
@@ -91,30 +74,12 @@ Route::prefix('absensi')->name('attendance.')->group(function () {
     Route::post('/proses', [AttendanceController::class, 'process'])->name('process');
 });
 
-// ============ AREA KARYAWAN ============
-Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('employee.')->group(function () {
-    Route::get('/gaji', [SalaryController::class, 'index'])->name('salary');
-    Route::get('/riwayat-absensi', [SalaryController::class, 'attendanceHistory'])->name('attendance.history');
-
-    Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
-    Route::patch('/delivery/{delivery}/status', [DeliveryController::class, 'updateStatus'])->name('delivery.update-status');
-
-    Route::get('/barcode', function () {
-        $profile = auth()->user()->employeeProfile;
-        return view('employee.barcode', compact('profile'));
-    })->name('barcode');
-});
-
-
 // ============ ADMIN ============
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
-    // // Verifikasi karyawan
-    // Route::get('/karyawan', [EmployeeVerificationController::class, 'index'])->name('employees.index');
-    // Route::get('/karyawan/{profile}', [EmployeeVerificationController::class, 'show'])->name('employees.show');
-    // Route::post('/karyawan/{profile}/verify', [EmployeeVerificationController::class, 'verify'])->name('employees.verify');
-    // Route::post('/karyawan/{profile}/reject', [EmployeeVerificationController::class, 'reject'])->name('employees.reject');
+    // Data karyawan (gaji saja, verifikasi murni di IT)
+    Route::get('/karyawan', [EmployeeVerificationController::class, 'index'])->name('employees.index');
     Route::post('/karyawan/{profile}/salary', [EmployeeVerificationController::class, 'updateSalary'])->name('employees.salary');
 
     // Manajemen order
@@ -142,7 +107,8 @@ Route::middleware(['auth', 'role:it'])->prefix('it')->name('it.')->group(functio
     Route::post('/users/{user}/toggle', [UserManagementController::class, 'toggleActive'])->name('users.toggle');
     Route::post('/employees/{profile}/verify', [UserManagementController::class, 'verifyEmployee'])->name('employees.verify');
     Route::post('/employees/{profile}/reject', [UserManagementController::class, 'rejectEmployee'])->name('employees.reject');
-// Absen Manual
+
+    // Absen Manual — route spesifik HARUS di atas route dengan parameter dinamis
     Route::get('/absensi', [AttendanceManagementController::class, 'index'])->name('attendance.index');
     Route::get('/absensi/tambah', [AttendanceManagementController::class, 'create'])->name('attendance.create');
     Route::post('/absensi', [AttendanceManagementController::class, 'store'])->name('attendance.store');

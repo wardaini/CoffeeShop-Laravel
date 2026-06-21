@@ -61,22 +61,12 @@ class AttendanceController extends Controller
     {
         $request->validate([
             'employee_code' => 'required|string',
-            'photo'         => 'required|string',
             'mode'          => 'required|in:in,out',
         ]);
 
         $profile = EmployeeProfile::where('employee_code', $request->employee_code)
             ->where('verification_status', 'verified')
             ->firstOrFail();
-
-        $imageData = $request->photo;
-        $imageData = str_replace('data:image/png;base64,', '', $imageData);
-        $imageData = str_replace('data:image/jpeg;base64,', '', $imageData);
-        $imageData = str_replace(' ', '+', $imageData);
-        $imageBinary = base64_decode($imageData);
-
-        $filename = 'attendance/' . $profile->employee_code . '_' . now()->format('YmdHis') . '.png';
-        Storage::disk('public')->put($filename, $imageBinary);
 
         $today = Carbon::today();
         $now   = Carbon::now();
@@ -92,7 +82,6 @@ class AttendanceController extends Controller
             }
 
             $attendance->clock_in = $now;
-            $attendance->clock_in_photo = $filename;
             $attendance->status = $now->format('H:i') > '08:30' ? 'telat' : 'hadir';
         } else {
             if (!$attendance->exists || !$attendance->clock_in) {
@@ -103,7 +92,6 @@ class AttendanceController extends Controller
             }
 
             $attendance->clock_out = $now;
-            $attendance->clock_out_photo = $filename;
         }
 
         $attendance->save();

@@ -178,9 +178,17 @@
     <h1>Setiap tegukan<br>adalah <em>cerita</em><br>yang baru.</h1>
     <p>Biji kopi pilihan, diseduh dengan penuh perhatian. Nikmati pengalaman kopi yang tak terlupakan di BrewNest.</p>
     <div class="hero-btns">
-        <a href="{{ route('menu.index') }}" class="btn btn-gold">Lihat Menu</a>
-        <a href="{{ route('order.track') }}" class="btn btn-outline">Lacak Pesanan</a>
+    <a href="{{ route('menu.index') }}" class="btn btn-gold">Lihat Menu</a>
+    <a href="{{ route('order.track') }}" class="btn btn-outline">Lacak Pesanan</a>
     </div>
+
+    @guest
+    <div style="margin-top:1.5rem; display:flex; gap:.8rem; flex-wrap:wrap;">
+        <a href="{{ route('employee.login') }}" style="font-size:.8rem; color:var(--muted); text-decoration:underline;">Login Karyawan</a>
+        <span style="color:var(--muted);">·</span>
+        <a href="{{ route('staff.login') }}" style="font-size:.8rem; color:var(--muted); text-decoration:underline;">Login Admin/Bos/IT</a>
+    </div>
+    @endguest
 </section>
 
 {{-- Stats --}}
