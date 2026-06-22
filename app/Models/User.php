@@ -26,6 +26,26 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function notifications()
+    {
+        return $this->hasMany(UserNotification::class);
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->hasMany(UserNotification::class)->where('is_read', false);
+    }
+
+    public function leaveRequests()
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    public function salaries()
+    {
+        return $this->hasMany(Salary::class);
+    }
+
     protected function casts(): array
     {
         return [

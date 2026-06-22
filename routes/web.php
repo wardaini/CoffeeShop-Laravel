@@ -18,6 +18,11 @@ use App\Http\Controllers\Bos\DashboardController as BosDashboard;
 use App\Http\Controllers\Bos\ReportController;
 use App\Http\Controllers\IT\UserManagementController;
 use App\Http\Controllers\IT\AttendanceManagementController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Admin\SalaryManagementController;
+use App\Http\Controllers\Admin\LeaveController as AdminLeaveController;
+use App\Http\Controllers\Bos\SalaryApprovalController;
+use App\Http\Controllers\Employee\LeaveController as EmployeeLeaveController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -45,6 +50,11 @@ Route::prefix('karyawan')->name('employee.')->group(function () {
     Route::get('/login', [EmployeeAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [EmployeeAuthController::class, 'login'])->name('login.store');
     Route::post('/logout', [EmployeeAuthController::class, 'logout'])->name('logout');
+
+    Route::get('/cuti', [EmployeeLeaveController::class, 'index'])->name('leave.index');
+    Route::get('/cuti/ajukan', [EmployeeLeaveController::class, 'create'])->name('leave.create');
+    Route::post('/cuti', [EmployeeLeaveController::class, 'store'])->name('leave.store');
+    Route::delete('/cuti/{leave}', [EmployeeLeaveController::class, 'cancel'])->name('leave.cancel');
 
     Route::middleware(['auth', 'role:karyawan'])->group(function () {
         Route::get('/dashboard', fn() => view('employee.dashboard'))->name('dashboard');
@@ -91,6 +101,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Manajemen produk
     Route::resource('products', AdminProductController::class);
     Route::post('/products/{product}/toggle', [AdminProductController::class, 'toggleAvailable'])->name('products.toggle');
+
+    // Manajemen Gaji
+    Route::get('/gaji', [SalaryManagementController::class, 'index'])->name('salary.index');
+    Route::post('/gaji/generate', [SalaryManagementController::class, 'generateAll'])->name('salary.generate');
+    Route::post('/gaji/{salary}/bonus', [SalaryManagementController::class, 'updateBonus'])->name('salary.bonus');
+    Route::post('/gaji/submit-bos', [SalaryManagementController::class, 'submitToBos'])->name('salary.submit');
+
+    // Manajemen Cuti Karyawan
+    Route::get('/cuti', [AdminLeaveController::class, 'index'])->name('leave.index');
+    Route::post('/cuti/{leave}/approve', [AdminLeaveController::class, 'approve'])->name('leave.approve');
+    Route::post('/cuti/{leave}/reject', [AdminLeaveController::class, 'reject'])->name('leave.reject');
 });
 
 // ============ BOS ============
@@ -99,6 +120,12 @@ Route::middleware(['auth', 'role:bos'])->prefix('bos')->name('bos.')->group(func
     Route::get('/laporan', [ReportController::class, 'index'])->name('report');
     Route::get('/laporan/pdf', [ReportController::class, 'downloadPdf'])->name('report.pdf');
     Route::get('/laporan/excel', [ReportController::class, 'downloadExcel'])->name('report.excel');
+    
+    // Approval Gaji
+    Route::get('/gaji', [SalaryApprovalController::class, 'index'])->name('salary.index');
+    Route::post('/gaji/approve-all', [SalaryApprovalController::class, 'approveAll'])->name('salary.approve-all');
+    Route::post('/gaji/{salary}/approve', [SalaryApprovalController::class, 'approveSingle'])->name('salary.approve');
+    Route::get('/gaji/{salary}/slip', [SalaryApprovalController::class, 'downloadSlipPdf'])->name('salary.slip');
 });
 
 // ============ IT ============
@@ -115,4 +142,11 @@ Route::middleware(['auth', 'role:it'])->prefix('it')->name('it.')->group(functio
     Route::get('/absensi/{attendance}/edit', [AttendanceManagementController::class, 'edit'])->name('attendance.edit');
     Route::put('/absensi/{attendance}', [AttendanceManagementController::class, 'update'])->name('attendance.update');
     Route::delete('/absensi/{attendance}', [AttendanceManagementController::class, 'destroy'])->name('attendance.destroy');
+});
+
+// ============ NOTIFIKASI (semua role yang login) ============
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifikasi/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::get('/notifikasi/count', [NotificationController::class, 'unreadCount'])->name('notifications.count');
 });
