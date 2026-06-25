@@ -40,6 +40,14 @@
     </div>
 
     <div class="menu-grid">
+        <a href="{{ route('employee.leave.index') }}" class="menu-card">
+            <div class="menu-icon">📋</div>
+            <div class="menu-label">Cuti / Izin</div>
+        </a>
+        <a href="{{ route('notifications.index') }}" class="menu-card">
+            <div class="menu-icon">🔔</div>
+            <div class="menu-label">Notifikasi</div>
+        </a>
         <a href="{{ route('employee.barcode') }}" class="menu-card">
             <div class="menu-icon">🪪</div>
             <div class="menu-label">Barcode Absensi</div>

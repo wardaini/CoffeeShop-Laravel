@@ -50,6 +50,10 @@
             <div class="icon">📈</div>
             <div class="label">Laporan Keuangan</div>
         </a>
+        <a href="{{ route('bos.salary.index') }}" class="menu-card">
+            <div class="icon">💰</div>
+            <div class="label">Persetujuan Gaji</div>
+        </a>
     </div>
 </div>
 @endsection

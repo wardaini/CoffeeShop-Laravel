@@ -71,6 +71,14 @@
             <div class="icon">☕</div>
             <div class="label">Manajemen Produk</div>
         </a>
+        <a href="{{ route('admin.salary.index') }}" class="menu-card">
+            <div class="icon">💰</div>
+            <div class="label">Manajemen Gaji</div>
+        </a>
+        <a href="{{ route('admin.leave.index') }}" class="menu-card">
+            <div class="icon">📋</div>
+            <div class="label">Cuti Karyawan</div>
+        </a>
     </div>
 
     <div class="section-title">Pesanan Terbaru</div>
