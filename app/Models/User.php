@@ -12,14 +12,34 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
-        'phone',
-        'photo',
-        'is_active',
+        'name', 'email', 'password', 'role', 'phone',
+        'photo', 'is_active', 'courier_status', 'last_active_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password'          => 'hashed',
+            'is_active'         => 'boolean',
+            'last_active_at'    => 'datetime',
+        ];
+    }
+
+    public function isAvailable(): bool
+    {
+        return $this->courier_status === 'available';
+    }
+
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
+    public function cleaningSchedules()
+    {
+        return $this->hasMany(CleaningSchedule::class, 'assigned_to');
+    }
 
     protected $hidden = [
         'password',

@@ -12,7 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
     $middleware->alias([
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
+        'role'     => \App\Http\Middleware\RoleMiddleware::class,
+        'activity' => \App\Http\Middleware\ActivityLogger::class,
     ]);
 
     $middleware->redirectGuestsTo(function ($request) {
