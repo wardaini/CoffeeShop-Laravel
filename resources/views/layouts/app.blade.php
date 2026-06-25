@@ -161,6 +161,20 @@
             @endif
         @endauth
 
+        @auth
+        <div style="position:relative; display:inline-block;">
+            <a href="{{ route('notifications.index') }}"
+            style="color:var(--muted); font-size:1.2rem; text-transform:none; letter-spacing:0;"
+            title="Notifikasi">
+                🔔
+            </a>
+            <span id="notif-badge"
+                style="display:none; position:absolute; top:-6px; right:-8px; background:var(--danger); color:#fff; border-radius:50%; width:16px; height:16px; font-size:.6rem; display:flex; align-items:center; justify-content:center; font-weight:700;">
+                0
+            </span>
+        </div>
+        @endauth
+
         <a href="{{ route('cart.index') }}" class="cart-badge">🛒 {{ count(session('cart', [])) }}</a>
     </div>
 </nav>
@@ -184,5 +198,29 @@
     });
 </script>
 @stack('scripts')
+
+@auth
+<script>
+    // Cek notifikasi belum dibaca setiap 30 detik
+    function checkNotifications() {
+        fetch('{{ route("notifications.count") }}')
+            .then(res => res.json())
+            .then(data => {
+                const badge = document.getElementById('notif-badge');
+                if (badge) {
+                    if (data.count > 0) {
+                        badge.style.display = 'flex';
+                        badge.textContent = data.count > 9 ? '9+' : data.count;
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            });
+    }
+
+    checkNotifications();
+    setInterval(checkNotifications, 30000);
+</script>
+@endauth
 </body>
 </html>
