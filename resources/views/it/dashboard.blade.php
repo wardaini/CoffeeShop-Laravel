@@ -27,7 +27,10 @@
     <p style="color:var(--muted); margin-bottom:1.5rem;">Manajemen User & Verifikasi Karyawan · Total: {{ $users->total() }} user</p>
 
     <div class="menu-bar">
+        <a href="{{ route('it.users.create') }}" class="btn btn-gold btn-sm">+ Tambah User</a>
         <a href="{{ route('it.attendance.index') }}" class="btn btn-outline btn-sm">📋 Kelola Absensi</a>
+        <a href="{{ route('it.logs') }}" class="btn btn-outline btn-sm">📊 Log Aktivitas</a>
+        <a href="{{ route('it.export') }}" class="btn btn-outline btn-sm">💾 Export Data</a>
     </div>
 
     <div style="overflow-x:auto;">
@@ -47,7 +50,12 @@
                 <tr>
                     <td>{{ $user->name }}</td>
                     <td style="font-size:.82rem; color:var(--muted);">{{ $user->email }}</td>
-                    <td><span class="role-badge role-{{ $user->role }}">{{ ucfirst($user->role) }}</span></td>
+                    <td>
+                        <span class="role-badge role-{{ $user->role }}">{{ ucfirst($user->role) }}</span>
+                        @if($user->employeeProfile?->position)
+                        <div style="font-size:.72rem; color:var(--muted); margin-top:.2rem;">{{ $user->employeeProfile->position }}</div>
+                        @endif
+                    </td>
                     <td>
                         <span class="{{ $user->is_active ? 'status-active' : 'status-inactive' }}">
                             {{ $user->is_active ? '● Aktif' : '● Nonaktif' }}
@@ -82,6 +90,14 @@
                                     {{ $user->is_active ? '🚫 Nonaktif' : '✅ Aktif' }}
                                 </button>
                             </form>
+                            {{-- Hapus: semua kecuali Bos --}}
+                            @if($user->role !== 'bos')
+                            <form method="POST" action="{{ route('it.users.destroy', $user) }}">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Hapus akun {{ $user->name }}?')">🗑</button>
+                            </form>
+                            @endif
                             @endif
                         </div>
                     </td>

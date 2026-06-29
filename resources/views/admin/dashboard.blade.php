@@ -79,6 +79,10 @@
             <div class="icon">📋</div>
             <div class="label">Cuti Karyawan</div>
         </a>
+        <a href="{{ route('admin.cleaning.index') }}" class="menu-card">
+            <div class="icon">🧹</div>
+            <div class="label">Jadwal Kebersihan</div>
+        </a>
     </div>
 
     <div class="section-title">Pesanan Terbaru</div>

@@ -17,8 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ]);
 
     $middleware->redirectGuestsTo(function ($request) {
-        // Arahkan ke login yang sesuai berdasarkan URL
-        if (str_starts_with($request->path(), 'karyawan')) {
+        if (str_starts_with($request->path(), 'karyawan') ||
+            str_starts_with($request->path(), 'kasir') ||
+            str_starts_with($request->path(), 'barista') ||
+            str_starts_with($request->path(), 'dapur') ||
+            str_starts_with($request->path(), 'kurir') ||
+            str_starts_with($request->path(), 'cleaning')) {
             return route('employee.login');
         }
         if (str_starts_with($request->path(), 'admin') ||
@@ -26,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             str_starts_with($request->path(), 'it')) {
             return route('staff.login');
         }
-        return route('customer.login');
+        return route('home');
     });
 })
     ->withExceptions(function (Exceptions $exceptions) {

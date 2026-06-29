@@ -22,4 +22,28 @@ class DashboardController extends Controller
             'totalRevenue', 'revenueThisMonth', 'totalOrders', 'totalEmployees'
         ));
     }
+
+    public function employees()
+{
+    $employees = \App\Models\User::where('role', 'karyawan')
+        ->whereHas('employeeProfile', fn($q) => $q->where('verification_status', 'verified'))
+        ->with('employeeProfile')
+        ->orderBy('name')
+        ->paginate(20);
+
+    return view('bos.employees', compact('employees'));
+}
+
+    public function attendances(\Illuminate\Http\Request $request)
+    {
+        $query = \App\Models\Attendance::with('user')->orderByDesc('date');
+
+        if ($request->filled('date')) {
+            $query->where('date', $request->date);
+        }
+
+        $attendances = $query->paginate(20)->withQueryString();
+
+        return view('bos.attendances', compact('attendances'));
+    }
 }

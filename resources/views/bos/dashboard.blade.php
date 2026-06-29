@@ -45,15 +45,26 @@
         </div>
     </div>
 
-    <div class="menu-grid">
-        <a href="{{ route('bos.report') }}" class="menu-card">
-            <div class="icon">📈</div>
-            <div class="label">Laporan Keuangan</div>
-        </a>
-        <a href="{{ route('bos.salary.index') }}" class="menu-card">
-            <div class="icon">💰</div>
-            <div class="label">Persetujuan Gaji</div>
-        </a>
+    <div style="margin-top:2rem;">
+        <div style="font-family:'Playfair Display',serif; color:var(--cream); font-size:1.1rem; margin-bottom:1rem;">Menu</div>
+        <div class="menu-grid">
+            <a href="{{ route('bos.report') }}" class="menu-card">
+                <div class="icon">📈</div>
+                <div class="label">Laporan Keuangan</div>
+            </a>
+            <a href="{{ route('bos.salary.index') }}" class="menu-card">
+                <div class="icon">💰</div>
+                <div class="label">Persetujuan Gaji</div>
+            </a>
+            <a href="{{ route('bos.employees') }}" class="menu-card">
+                <div class="icon">👥</div>
+                <div class="label">Data Karyawan</div>
+            </a>
+            <a href="{{ route('bos.attendances') }}" class="menu-card">
+                <div class="icon">📋</div>
+                <div class="label">Rekap Absensi</div>
+            </a>
+        </div>
     </div>
 </div>
 @endsection

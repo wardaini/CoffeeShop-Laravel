@@ -181,7 +181,8 @@ Route::middleware(['auth', 'role:bos'])->prefix('bos')->name('bos.')->group(func
     Route::get('/laporan', [ReportController::class, 'index'])->name('report');
     Route::get('/laporan/pdf', [ReportController::class, 'downloadPdf'])->name('report.pdf');
     Route::get('/laporan/excel', [ReportController::class, 'downloadExcel'])->name('report.excel');
-
+    Route::get('/karyawan', [\App\Http\Controllers\Bos\DashboardController::class, 'employees'])->name('employees');
+    Route::get('/absensi', [\App\Http\Controllers\Bos\DashboardController::class, 'attendances'])->name('attendances');
     Route::get('/gaji', [SalaryApprovalController::class, 'index'])->name('salary.index');
     Route::post('/gaji/approve-all', [SalaryApprovalController::class, 'approveAll'])->name('salary.approve-all');
     Route::post('/gaji/{salary}/approve', [SalaryApprovalController::class, 'approveSingle'])->name('salary.approve');

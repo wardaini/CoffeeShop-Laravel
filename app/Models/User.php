@@ -66,14 +66,7 @@ class User extends Authenticatable
         return $this->hasMany(Salary::class);
     }
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
-        ];
-    }
+   
 
     public function employeeProfile()
     {
