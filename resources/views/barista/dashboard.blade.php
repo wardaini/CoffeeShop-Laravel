@@ -89,4 +89,16 @@
     // Auto refresh setiap 20 detik
     setTimeout(() => window.location.reload(), 20000);
 </script>
+
+{{-- Menu Karyawan --}}
+<div style="max-width:900px; margin:2rem auto; padding:0 5%; border-top:1px solid rgba(200,151,58,.1); padding-top:1.5rem;">
+    <div style="font-size:.78rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:1rem;">Menu Karyawan</div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:.8rem;">
+        <a href="{{ route('employee.barcode') }}" class="btn btn-outline btn-sm">🪪 Barcode Absensi</a>
+        <a href="{{ route('employee.attendance.history') }}" class="btn btn-outline btn-sm">📋 Riwayat Absensi</a>
+        <a href="{{ route('employee.salary') }}" class="btn btn-outline btn-sm">💰 Slip Gaji</a>
+        <a href="{{ route('employee.leave.index') }}" class="btn btn-outline btn-sm">🏖️ Cuti / Izin</a>
+        <a href="{{ route('notifications.index') }}" class="btn btn-outline btn-sm">🔔 Notifikasi</a>
+    </div>
+</div>
 @endsection
