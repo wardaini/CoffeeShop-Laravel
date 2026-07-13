@@ -67,6 +67,11 @@
         </div>
     </div>
 
+    <div style="display:flex; gap:.8rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+        <a href="{{ route('kasir.queue') }}" class="btn btn-gold btn-sm">📋 Antrian Aktif</a>
+        <a href="{{ route('kasir.orders') }}" class="btn btn-outline btn-sm">📦 Semua Order</a>
+    </div>
+
     {{-- Recent Orders --}}
     <div class="section-title">📦 Pesanan Terbaru</div>
 

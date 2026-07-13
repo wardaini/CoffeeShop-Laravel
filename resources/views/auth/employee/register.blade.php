@@ -81,7 +81,7 @@
                 @error('position')<div class="form-error">{{ $message }}</div>@enderror
             </div>
 
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label>Nomor KTP</label>
                 <input type="text" name="ktp_number" value="{{ old('ktp_number') }}" maxlength="16" required>
                 @error('ktp_number')<div class="form-error">{{ $message }}</div>@enderror
@@ -98,7 +98,7 @@
                     <input type="file" name="face_photo" accept="image/*" capture="user" required>
                     @error('face_photo')<div class="form-error">{{ $message }}</div>@enderror
                 </div>
-            </div>
+            </div> --}}
 
             <button type="submit" class="btn btn-gold" style="width:100%; margin-top:.5rem;">Daftar Sekarang</button>
         </form>
