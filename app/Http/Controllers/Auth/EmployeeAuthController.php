@@ -25,15 +25,15 @@ class EmployeeAuthController extends Controller
             'email'       => 'required|email|unique:users,email',
             'phone'       => 'required|string|unique:users,phone|min:10|max:15',
             'password'    => 'required|string|min:8|confirmed',
-            'position'    => 'required|string|max:50',
-            'ktp_number'  => 'required|string|max:20',
-            'ktp_photo'   => 'required|image|max:2048',
-            'face_photo'  => 'required|image|max:2048',
+            'position'    => 'required|string|max:50'
+            // 'ktp_number'  => 'required|string|max:20',
+            // 'ktp_photo'   => 'required|image|max:2048',
+            // 'face_photo'  => 'required|image|max:2048',
         ]);
 
         DB::transaction(function () use ($request) {
-            $ktpPath  = $request->file('ktp_photo')->store('employees/ktp', 'public');
-            $facePath = $request->file('face_photo')->store('employees/face', 'public');
+            // $ktpPath  = $request->file('ktp_photo')->store('employees/ktp', 'public');
+            // $facePath = $request->file('face_photo')->store('employees/face', 'public');
 
             $user = User::create([
                 'name'     => $request->name,
@@ -41,15 +41,15 @@ class EmployeeAuthController extends Controller
                 'phone'    => $request->phone,
                 'password' => Hash::make($request->password),
                 'role'     => 'karyawan',
-                'photo'    => $facePath,
+                // 'photo'    => $facePath,
             ]);
 
             EmployeeProfile::create([
                 'user_id'             => $user->id,
                 'position'            => $request->position,
-                'ktp_number'          => $request->ktp_number,
-                'ktp_photo'           => $ktpPath,
-                'face_photo'          => $facePath,
+                // 'ktp_number'          => $request->ktp_number,
+                // 'ktp_photo'           => $ktpPath,
+                // 'face_photo'          => $facePath,
                 'verification_status' => 'pending',
                 'joined_at'           => now(),
             ]);
