@@ -113,4 +113,29 @@ class OrderQueueController extends Controller
 
         return back()->with('success', "Order {$order->order_code} selesai.");
     }
+
+    public function allOrders(Request $request)
+    {
+        $query = \App\Models\Order::with('items.product')->latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('payment')) {
+            $query->where('payment_status', $request->payment);
+        }
+
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        $orders  = $query->paginate(20)->withQueryString();
+        $todayRevenue = \App\Models\Order::where('payment_status', 'paid')
+            ->whereDate('created_at', today())
+            ->sum('total_price');
+        $todayCount = \App\Models\Order::whereDate('created_at', today())->count();
+
+        return view('kasir.orders', compact('orders', 'todayRevenue', 'todayCount'));
+    }
 }

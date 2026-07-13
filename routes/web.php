@@ -119,6 +119,7 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('kasir')->name('kasir.')->g
     Route::post('/orders/{order}/assign-courier', [OrderQueueController::class, 'assignCourier'])->name('assign-courier');
     Route::get('/couriers/available', [OrderQueueController::class, 'availableCouriers'])->name('available-couriers');
     Route::post('/orders/{order}/complete', [OrderQueueController::class, 'complete'])->name('complete');
+    Route::get('/orders', [OrderQueueController::class, 'allOrders'])->name('orders');
 });
 
 // ============ BARISTA ============
