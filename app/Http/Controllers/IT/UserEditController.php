@@ -64,22 +64,27 @@ class UserEditController extends Controller
             'name'     => 'required|string|max:100',
             'email'    => 'required|email|unique:users,email,' . $user->id,
             'phone'    => 'nullable|string|unique:users,phone,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
             'position' => 'nullable|string',
         ]);
 
-        $oldName = $user->name;
-        $user->update([
+        $data = [
             'name'  => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-        ]);
+        ];
 
-        // Update posisi di employee profile
+        if ($request->filled('password')) {
+            $data['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+
+        $user->update($data);
+
         if ($user->employeeProfile && $request->position) {
             $user->employeeProfile->update(['position' => $request->position]);
         }
 
-        ActivityLog::record('UPDATE_USER', 'it', "IT mengupdate data user: {$oldName} → {$user->name}");
+        ActivityLog::record('UPDATE_USER', 'it', "IT mengupdate data user: {$user->name}");
 
         return redirect()->route('it.dashboard')->with('success', "Data {$user->name} berhasil diperbarui.");
     }
