@@ -18,7 +18,6 @@
     .status-telat { background:rgba(200,151,58,.15); color:var(--gold-soft); }
     .status-izin { background:rgba(52,152,219,.15); color:#74b9ff; }
     .status-alpha { background:rgba(192,57,43,.15); color:#e07070; }
-
     .summary-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; margin-bottom:1.5rem; }
     .summary-card { background:var(--card); border:1px solid rgba(200,151,58,.1); border-radius:10px; padding:1rem; text-align:center; }
     .summary-card .num { font-family:'Playfair Display',serif; font-size:1.6rem; color:var(--gold); }
@@ -31,7 +30,6 @@
     <a href="{{ route('bos.dashboard') }}" style="color:var(--muted); font-size:.85rem;">← Kembali</a>
     <h1 style="font-family:'Playfair Display',serif; color:var(--cream); margin:1rem 0 1.5rem;">📋 Rekap Absensi</h1>
 
-    {{-- Summary --}}
     <div class="summary-cards">
         <div class="summary-card">
             <div class="num" style="color:#6fcf97;">{{ $attendances->where('status', 'hadir')->count() }}</div>
@@ -51,7 +49,6 @@
         </div>
     </div>
 
-    {{-- Filter --}}
     <form method="GET" class="filter-bar">
         <input type="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()">
         <select name="user_id" onchange="this.form.submit()">
