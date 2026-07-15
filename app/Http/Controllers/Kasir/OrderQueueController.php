@@ -15,8 +15,8 @@ class OrderQueueController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('items.product')
-            ->whereIn('status', ['pending', 'processing'])
+        $orders = Order::with(['items.product.category', 'delivery.courier'])
+            ->whereIn('status', ['pending', 'processing', 'ready'])
             ->orderBy('created_at')
             ->get();
 

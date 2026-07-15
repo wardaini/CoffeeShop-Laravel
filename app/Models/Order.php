@@ -26,7 +26,6 @@ class Order extends Model
     {
         parent::boot();
         static::creating(function ($order) {
-            $order->order_code = 'ORD-' . \Illuminate\Support\Str::random(8);
             $order->order_code = 'ORD-' . strtoupper(\Illuminate\Support\Str::random(8));
         });
 
