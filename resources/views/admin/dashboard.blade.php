@@ -111,14 +111,7 @@
                         </span>
                     </td>
                     <td>
-                        @if($order->payment_status === 'unpaid')
-                        <form method="POST" action="{{ route('admin.orders.confirm-payment', $order) }}" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-gold btn-sm">✅ Konfirmasi</button>
-                        </form>
-                        @else
-                        <span style="color:var(--muted); font-size:.8rem;">Sudah Lunas</span>
-                        @endif
+                        <a href="{{ route('order.receipt', $order) }}" class="btn btn-outline btn-sm" target="_blank">🧾 Struk</a>
                     </td>
                 </tr>
                 @endforeach

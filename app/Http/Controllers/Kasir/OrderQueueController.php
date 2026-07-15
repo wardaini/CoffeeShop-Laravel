@@ -33,9 +33,10 @@ class OrderQueueController extends Controller
     {
         $order->update(['payment_status' => 'paid']);
 
-        ActivityLog::record('CONFIRM_PAYMENT', 'kasir', "Kasir konfirmasi pembayaran order {$order->order_code}");
+        ActivityLog::record('CONFIRM_PAYMENT', 'kasir',
+            "Kasir konfirmasi pembayaran order {$order->order_code} ({$order->payment_method_label})");
 
-        return back()->with('success', "Pembayaran {$order->order_code} dikonfirmasi.");
+        return back()->with('success', "Pembayaran {$order->order_code} dikonfirmasi lunas.");
     }
 
     public function sendToKitchen(Request $request, Order $order)
