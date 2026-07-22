@@ -29,27 +29,36 @@ class OrderController extends Controller
             'customer_email'   => 'nullable|email',
             'customer_phone'   => 'nullable|string|max:20',
             'notes'            => 'nullable|string|max:500',
-            'order_type'       => 'required|in:dine_in,take_away',
-            'table_number'     => 'required_if:order_type,dine_in|nullable|string|max:10',
-            'take_away_method' => 'required_if:order_type,take_away|nullable|in:delivery,pickup',
-            'delivery_address' => 'required_if:take_away_method,delivery|nullable|string|max:255',
+            'items'            => 'required|array',
+            'items.*.cart_key' => 'required',
+            'items.*.item_order_type' => 'required|in:dine_in,take_away',
+            'table_number'     => 'nullable|string|max:10',
+            'delivery_address' => 'nullable|string|max:255',
             'payment_method'   => 'required|in:qris,dana,ovo,bsi,bank_aceh,cash',
         ]);
 
         $cart = session()->get('cart', []);
-
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Keranjang kosong!');
         }
 
+        // Tentukan order_type utama & take_away_method
+        $itemTypes = collect($request->items)->pluck('item_order_type');
+        $hasDineIn   = $itemTypes->contains('dine_in');
+        $hasTakeAway = $itemTypes->contains('take_away');
+
+        // Cek apakah ada take away delivery
+        $hasDelivery = collect($request->items)
+            ->filter(fn($i) => ($i['item_order_type'] ?? '') === 'take_away' && ($i['take_away_method'] ?? '') === 'delivery')
+            ->isNotEmpty();
+
+        // Order type: kalau ada keduanya → 'mixed', kalau hanya satu
+        $orderType = $hasDineIn && $hasTakeAway ? 'mixed' : ($hasDineIn ? 'dine_in' : 'take_away');
+
         $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        $deliveryFee = $hasDelivery ? 8000 : 0;
 
-        // Ongkir flat untuk delivery
-        $deliveryFee = ($request->order_type === 'take_away' && $request->take_away_method === 'delivery')
-            ? 8000
-            : 0;
-
-        $order = DB::transaction(function () use ($request, $cart, $total, $deliveryFee) {
+        $order = DB::transaction(function () use ($request, $cart, $total, $deliveryFee, $orderType, $hasDelivery) {
             $order = Order::create([
                 'user_id'          => auth()->id(),
                 'customer_name'    => $request->customer_name,
@@ -57,20 +66,26 @@ class OrderController extends Controller
                 'customer_phone'   => $request->customer_phone,
                 'notes'            => $request->notes,
                 'total_price'      => $total,
-                'order_type'       => $request->order_type,
-                'take_away_method' => $request->order_type === 'take_away' ? $request->take_away_method : null,
-                'table_number'     => $request->order_type === 'dine_in' ? $request->table_number : null,
-                'delivery_address' => $request->take_away_method === 'delivery' ? $request->delivery_address : null,
+                'order_type'       => $orderType,
+                'take_away_method' => $hasDelivery ? 'delivery' : ($orderType !== 'dine_in' ? 'pickup' : null),
+                'table_number'     => $request->table_number,
+                'delivery_address' => $request->delivery_address,
                 'payment_method'   => $request->payment_method,
-                'payment_status'   => $request->payment_method === 'cash' ? 'unpaid' : 'unpaid',
+                'payment_status'   => 'unpaid',
                 'delivery_fee'     => $deliveryFee,
             ]);
 
-            foreach ($cart as $item) {
+            // Buat order items dengan tipe per item
+            foreach ($request->items as $itemData) {
+                $cartKey  = $itemData['cart_key'];
+                $cartItem = $cart[$cartKey] ?? null;
+                if (!$cartItem) continue;
+
                 $order->items()->create([
-                    'product_id' => $item['id'],
-                    'quantity'   => $item['quantity'],
-                    'price'      => $item['price'],
+                    'product_id'      => $cartItem['id'],
+                    'quantity'        => $cartItem['quantity'],
+                    'price'           => $cartItem['price'],
+                    'item_order_type' => $itemData['item_order_type'],
                 ]);
             }
 

@@ -68,13 +68,12 @@ class Order extends Model
 
     public function getOrderTypeLabelAttribute(): string
     {
-        if ($this->order_type === 'dine_in') {
-            return 'Dine In - Meja ' . $this->table_number;
-        }
-
-        return $this->take_away_method === 'delivery'
-            ? 'Take Away - Delivery'
-            : 'Take Away - Ambil Sendiri';
+        return match($this->order_type) {
+            'dine_in'  => 'Dine In' . ($this->table_number ? ' - Meja ' . $this->table_number : ''),
+            'take_away'=> $this->take_away_method === 'delivery' ? 'Take Away - Delivery' : 'Take Away - Ambil Sendiri',
+            'mixed'    => 'Dine In & Take Away' . ($this->table_number ? ' - Meja ' . $this->table_number : ''),
+            default    => ucfirst($this->order_type ?? '-'),
+        };
     }
 
     public function getPaymentMethodLabelAttribute(): string
