@@ -45,6 +45,11 @@
             <td>{{ $item->quantity }} x Rp {{ number_format($item->price, 0, ',', '.') }}</td>
             <td class="right">Rp {{ number_format($item->quantity * $item->price, 0, ',', '.') }}</td>
         </tr>
+        <tr>
+            <td colspan="2" style="font-size:10px; color:#666;">
+                {{ $item->item_order_type === 'dine_in' ? '🪑 Dine In' : '🥤 Take Away' }}
+            </td>
+        </tr>
         @endforeach
     </table>
 
