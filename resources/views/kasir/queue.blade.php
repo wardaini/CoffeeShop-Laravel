@@ -210,6 +210,11 @@
                         <tr>
                             <td>{{ $item->product->name ?? '-' }}</td>
                             <td>{{ $item->quantity }}</td>
+                            <td>
+                                <span style="font-size:.78rem; color:{{ $item->item_order_type === 'dine_in' ? 'var(--gold-soft)' : '#74b9ff' }};">
+                                    {{ $item->item_order_type === 'dine_in' ? '🪑 Dine In' : '🥤 Take Away' }}
+                                </span>
+                            </td>
                             <td style="color:var(--muted);">
                                 {{ $item->assigned_to === 'barista' ? '☕ Barista' : '🍳 Dapur' }}
                             </td>
