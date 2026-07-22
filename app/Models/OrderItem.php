@@ -11,8 +11,12 @@ class OrderItem extends Model
 
     protected $fillable = [
         'order_id', 'product_id', 'quantity', 'price',
-        'assigned_to', 'kitchen_status', 'kitchen_notes',
+        'assigned_to', 'kitchen_status', 'kitchen_notes', 'item_order_type',
     ];
+    public function getItemOrderTypeLabelAttribute(): string
+    {
+        return $this->item_order_type === 'dine_in' ? '🪑 Dine In' : '🥤 Take Away';
+    }
 
     public function getKitchenStatusLabelAttribute(): string
     {
